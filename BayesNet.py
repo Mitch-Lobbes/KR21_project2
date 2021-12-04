@@ -238,6 +238,8 @@ class BayesNet:
     def get_edges_outgoing_to_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[0] == variable]
 
+    def get_edges_for_var(self, variable: str) -> list[Tuple[str, str]]:
+        return [edge for edge in self.structure.edges if edge[0] == variable or edge[1] == variable]
 
     def get_edges(self) -> OutEdgeView:
         return self.structure.edges

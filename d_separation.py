@@ -25,7 +25,8 @@ class DSeparated:
         # Step 2: Moralization
         self._moralization()
 
-        # Step 3:
+        # Step 3: Givens Removal
+        self._given_removal()
 
         pass
 
@@ -53,6 +54,12 @@ class DSeparated:
                 for j in range(i+1, len(parents)):
                     edge = (parents[i], parents[j])
                     self.bayesNet.add_edge(edge=edge)
+
+    def _given_removal(self) -> None:
+        for node in self.Z:
+            edges = self.bayesNet.get_edges_for_var(variable=node)
+            self.bayesNet.del_edges(edges=edges)
+            self.bayesNet.del_var(variable=node)
 
 
     def prune(self) -> None:
