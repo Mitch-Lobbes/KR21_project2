@@ -1,6 +1,7 @@
 from typing import List, Tuple, Dict
 import networkx as nx
 import matplotlib.pyplot as plt
+from networkx.classes.reportviews import OutEdgeView
 from pgmpy.readwrite import XMLBIFReader
 import math
 import itertools
@@ -226,3 +227,38 @@ class BayesNet:
         :param edge: Edge to be deleted (e.g. ('A', 'B')).
         """
         self.structure.remove_edge(edge[0], edge[1])
+
+    def del_edges(self, edges: list[Tuple[str, str]]) -> None:
+        for edge in edges:
+            self.del_edge(edge)
+
+    def get_edges_ingoing_to_var(self, variable: str) -> list[Tuple[str, str]]:
+        return [edge for edge in self.structure.edges if edge[1] == variable]
+
+    def get_edges_outgoing_to_var(self, variable: str) -> list[Tuple[str, str]]:
+        return [edge for edge in self.structure.edges if edge[0] == variable]
+
+
+    def get_edges(self) -> OutEdgeView:
+        return self.structure.edges
+
+    def get_all_leaf_nodes(self) -> list[str]:
+        """Get a list of all leaf nodes of the current graph
+
+        Returns:
+            List[str]: List of leaf nodes
+        """
+        all_nodes = self.get_all_variables()
+        return [node for node in all_nodes if self._is_leaf_node(node)]
+
+    def _is_leaf_node(self, node: str) -> bool:
+        """Checks if given node is a leaf node -> Has no further successors
+
+        Args:
+            node (str): Node to check
+
+        Returns:
+            bool: True if it is a leaf node, False otherwise
+        """
+        return len(self.get_children(variable=node)) == 0
+
