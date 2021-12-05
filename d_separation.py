@@ -83,10 +83,13 @@ while not done:
     for node in X:
         next_node = node
         for tuple in reversed(all_edges_list):
+            if 
             if node in tuple:
                 if node == tuple[0]:
                     next_node = tuple[1]
                     all_edges_list.remove(tuple)
+                    if next_node in all_edges_list:
+                        if ...
 
                     
 
@@ -97,17 +100,30 @@ while not done:
                     if tuple[2] in 
 
 
-
-
-
-
-
     else:
         return True (they are d-seperated)
 
+TO DO => do an all edges list of all edge-tuples
+
+def search_connection(self, next_node) -> Boolean:
+    
+    for element in self.Z:
+        if element in tuple: => set up tuple
+            return False
+        
+        else:
+            for tuple in self.all_edges():
+                if next_node == in tuple:
+                    if next_node == tuple[0]:
+                        next_node = tuple[1]
+
+                    elif next_node == tuple[1]:
+                        next_node = tuple[0]
+
+
+for node in X:
+    search_connection(node)
 """
-
-
 
 
 
