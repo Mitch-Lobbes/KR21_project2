@@ -1,4 +1,5 @@
 from typing import Set
+import copy
 
 from networkx import DiGraph
 
@@ -23,12 +24,41 @@ class DSeparated:
         self._ancestral_graph()
 
         # Step 2: Moralization
+        self.bayesNet.draw_structure()
         self._moralization()
+        self.bayesNet.draw_structure()
 
         # Step 3: Givens Removal
         self._given_removal()
+        self.bayesNet.draw_structure()
 
-        pass
+        # Step 4: Check if path exists
+        for node in self.X:
+            connected_nodes = self._connected_nodes(wanted_node=node)
+            for y_node in self.Y:
+                if y_node in connected_nodes:
+                    return False
+
+        return True
+
+    def _connected_nodes(self, wanted_node: str) -> Set[str]:
+        connection_dict = {}
+        for node in self.bayesNet.structure.nodes:
+            neighbors = self.bayesNet.get_neighbors(node=node)
+            connection_dict[node] = set(neighbors)
+
+        done = False
+        while not done:
+            len_before = len(connection_dict[wanted_node])
+            new_connections = copy.deepcopy(connection_dict[wanted_node])
+            for connected_node in connection_dict[wanted_node]:
+                node_neioghbors = connection_dict[connected_node]
+                new_connections = new_connections.union(node_neioghbors)
+            connection_dict[wanted_node] = new_connections
+            if len_before == len(new_connections):
+                done = True
+
+        return connection_dict[wanted_node]
 
     def _ancestral_graph(self) -> None:
         union_set = self.X.union(self.Y).union(self.Z)
@@ -45,8 +75,9 @@ class DSeparated:
                 done = True
 
     def _moralization(self) -> None:
-        for node in self.bayesNet.get_all_variables():
+        for node in self.Z:
             parents = self.bayesNet.structure.predecessors(node)
+            parents = list(parents)
             # Marry parents
             for i in range(len(parents)):
                 if i+1 == len(parents):
