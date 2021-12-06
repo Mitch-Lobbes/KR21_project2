@@ -253,6 +253,9 @@ class BayesNet:
         all_nodes = self.get_all_variables()
         return [node for node in all_nodes if self._is_leaf_node(node)]
 
+    def get_neighbors(self, node: str) -> list[str]:
+        return list(self.structure.successors(node)) + list(self.structure.predecessors(node))
+
     def _is_leaf_node(self, node: str) -> bool:
         """Checks if given node is a leaf node -> Has no further successors
 
