@@ -60,6 +60,7 @@ class DSeparated:
 
         return connection_dict[wanted_node]
 
+    # KILL unimportant nodes
     def _ancestral_graph(self) -> None:
         union_set = self.X.union(self.Y).union(self.Z)
         done = False
