@@ -97,7 +97,6 @@ class BayesNet:
         except KeyError:
             raise Exception('Variable not in the BN')
 
-    def get_cpt_dependant_on_node(self, node: str) -> Dict[str, pd.DataFrame]:
 
     def get_all_variables(self) -> List[str]:
         """

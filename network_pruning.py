@@ -48,6 +48,15 @@ class FrenchPruning:
                 cpt = self._bn.get_cpt(variable=x)
                 print(cpt)
 
+
+
+    def multi_fly(self, factors: list[pd.DataFrame]):
+        all_columns = []
+
+        set([all_columns.extend(df.columns) for df in factors])
+
+
+
     def _get_all_leaf_nodes(self, all_nodes: Set[str]) -> list[str]:
         """Get a list of all leaf nodes of the current graph
 

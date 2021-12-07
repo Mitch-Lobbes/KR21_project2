@@ -1,4 +1,6 @@
 from BayesNet import BayesNet
+from typing import Set
+import pandas as pd
 
 
 class MAP:
@@ -31,4 +33,16 @@ class MAP:
                 val = var_value_true if row[node] is True else var_value_false
                 df.at[index, 'p'] *= val
 
-        
+    def super_max(self, cpt: pd.DataFrame, variable: str):
+
+        s1 = cpt.loc[cpt[variable] == True].max().to_frame()
+        s2 = cpt.loc[cpt[variable] == False].max().to_frame()
+
+        cpt = pd.concat([s1, s2], axis=1).reset_index().transpose()
+
+        return cpt
+
+    def multi_fly(self):
+        pass
+
+
