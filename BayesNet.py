@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set, Union
 import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.classes.reportviews import OutEdgeView
@@ -142,6 +142,7 @@ class BayesNet:
         :param cpt: cpt to be filtered
         :return: table with compatible instantiations and their probability value
         """
+
         var_names = instantiation.index.values
         var_names = [v for v in var_names if v in cpt.columns]  # get rid of excess variables names
         compat_indices = cpt[var_names] == instantiation[var_names].values
@@ -221,6 +222,15 @@ class BayesNet:
         """
         self.structure.remove_node(variable)
 
+    def delete_vars(self, variables: Union[list[str], Set[str]]) -> None:
+        """
+        Delete a list of variables from the BN.
+        :param variables: Variables to be deleted.
+        """
+
+        for var in variables:
+            self.structure.remove_node(var)
+
     def del_edge(self, edge: Tuple[str, str]) -> None:
         """
         Delete an edge form the structure of the BN.
@@ -235,8 +245,9 @@ class BayesNet:
     def get_edges_ingoing_to_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[1] == variable]
 
-    def get_edges_outgoing_to_var(self, variable: str) -> list[Tuple[str, str]]:
+    def get_edges_outgoing_from_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[0] == variable]
+
 
     def get_edges_for_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[0] == variable or edge[1] == variable]
