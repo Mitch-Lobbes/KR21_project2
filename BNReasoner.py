@@ -44,7 +44,7 @@ class BNReasoner:
 
         # Remove all edges outgoing from Z
         for node in Z:
-            self.bn.del_edges(self.bn.get_edges_outgoing_to_var(variable=node))
+            self.bn.del_edges(self.bn.get_edges_outgoing_from_var(variable=node))
 
         return g_prime
 
