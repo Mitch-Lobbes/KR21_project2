@@ -31,4 +31,5 @@ class MAP:
                 val = var_value_true if row[node] is True else var_value_false
                 df.at[index, 'p'] *= val
 
+        # Sum up rows
         
