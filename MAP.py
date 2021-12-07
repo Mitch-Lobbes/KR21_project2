@@ -50,6 +50,7 @@ class MAP:
                 # delete result_row?
                 new_df.drop(df.index[[result_counter]])
 
+            df = new_df
 
     def find_corresponding_row(self, df, row, variable_tuple):
         row_dict  = row.to_dict()
