@@ -11,6 +11,8 @@ class MAP:
     def __init__(self):
         pass
 
+    def sum_out_new
+
     def sum_out(self, bn: BayesNet, node: str) -> None:
         cpt = bn.get_all_cpts()
         dfs_containing_var = [val for key, val in cpt.items() if node in val]
@@ -41,7 +43,7 @@ class MAP:
                 false_value=var_value_false
             )
 
-            # SUM ROWS
+        # SUM ROWS
         for df in dfs_containing_var:
             column_names = [key for key in df if key != node]
             new_df = pd.DataFrame(columns=column_names)
@@ -87,4 +89,7 @@ class MAP:
         return cpt
 
     def multi_fly(self):
+        pass
+    
+    def sum_out_var(cpt: pd.DataFrame, variable: str) -> pd.DataFrame:
         pass
