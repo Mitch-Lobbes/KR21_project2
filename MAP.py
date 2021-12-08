@@ -1,3 +1,6 @@
+import copy
+
+from BayesNet import BayesNet
 from BayesNet import BayesNet
 from typing import Set
 import pandas as pd
@@ -28,10 +31,51 @@ class MAP:
 
         var_value_true = var_cpt.loc[var_cpt[node] is True]['p']
         var_value_false = var_cpt.loc[var_cpt[node] is False]['p']
+
+        # MULTIPLY VALUES
         for df in dfs_containing_var:
+            self._multiply_rows_with_value(
+                df=df,
+                variable=node,
+                true_value=var_value_true,
+                false_value=var_value_false
+            )
+
+            # SUM ROWS
+        for df in dfs_containing_var:
+            column_names = [key for key in df if key != node]
+            new_df = pd.DataFrame(columns=column_names)
             for index, row in df.iterrows():
-                val = var_value_true if row[node] is True else var_value_false
-                df.at[index, 'p'] *= val
+                corresponding_row = self._search_correspinding_row(
+                    df=df,
+                    row=row,
+                    key_var=node
+                )
+                corresponding_row.at['p'] += corresponding_row['p'] # Does this work?
+                new_df.append(copy.deepcopy(corresponding_row))
+                df.drop(index=corresponding_row.index[0])
+            df = new_df
+        print(df)
+
+        return bn, df.columns[0]
+
+    def _multiply_rows_with_value(self, df, variable, true_value, false_value):
+        for index, row in df.iterrows():
+            val = true_value if row[variable] is True else false_value
+            df.at[index, 'p'] *= val
+
+    def _search_correspinding_row(self, df, row, key_var):
+
+        res_row = df.loc[df[key_var] == (not row[key_var])]
+        res_row.drop(key_var, 1, inplace=True)
+
+        for key in res_row:
+            res_row = res_row.loc[df[key] == row[key]]
+
+        return res_row
+
+        # result_row = df.loc[df[node] == not node_value].loc[df['I'] == False].loc[df['X'] == False]
+        # index = x.loc[x['J'] == True].loc[x['I'] == False].loc[x['X'] == False].index[0]    
 
     def super_max(self, cpt: pd.DataFrame, variable: str):
 
@@ -44,5 +88,3 @@ class MAP:
 
     def multi_fly(self):
         pass
-
-
