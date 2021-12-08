@@ -107,9 +107,10 @@ class BayesNet:
 
     def get_all_cpts(self) -> Dict[str, pd.DataFrame]:
         """
-        Returns a dictionary of all cps in the network indexed by the variable they belong to.
+        Returns a dictionary of all cpts in the network indexed by the variable they belong to.
         :return: Dictionary of all CPTs
         """
+
         cpts = {}
         for var in self.get_all_variables():
             cpts[var] = self.get_cpt(var)

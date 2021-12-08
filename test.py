@@ -1,21 +1,49 @@
+import pandas as pd
+
 from BNReasoner import BNReasoner
 from BayesNet import BayesNet
 from d_separation import DSeparated
 from network_pruning import FrenchPruning
+from MPE import MPE
 
-NETWORK = "testing/lecture_example.BIFXML"
+NETWORK = "testing/lecture_example2.BIFXML"
 
 
 test = BayesNet()
 test.load_from_bifxml(file_path=NETWORK)
 
+mpe = MPE()
+
+mpe.run(test, evidence={'J': True, 'O': False})
+
+
+raise SystemExit
 
 #test.create_bn(variables = ["R", "E", "A", "C", "B"], edges = [("E", "R"), ("E", "A"), ("B", "A"), ("A", "C")], cpts = {'R': [1, 2], 'E': [3,4], 'A': [5,6], "C": [3,4], "B": [8,9]})
 pruning = FrenchPruning()
 
 pruning.run(bn=test, query={'Wet Grass?'}, evidence={'Winter?': True, 'Rain?': False})
 
-test.draw_structure()
+data_1 = {'B': [True, True, True, True, False, False, False, False],
+          'C': [True, True, False, False, True, True, False, False],
+          'D': [True, False, True, False, True, False, True, False],
+          'p': [0.95, 0.05, 0.9, 0.1, 0.8, 0.2, 0, 1]}
+
+df_1 = pd.DataFrame(data=data_1)
+
+data_2 = {'D': [True, True, False, False],
+          'E': [True, False, True, False],
+          'p': [0.448, 0.192, 0.112, 0.248]}
+
+df_2 = pd.DataFrame(data=data_2)
+
+factors = [df_1, df_2]
+
+f = pruning.multi_fly(factors=factors)
+
+print(f)
+
+#test.draw_structure()
 
 #reasoner = BNReasoner(test)
 #

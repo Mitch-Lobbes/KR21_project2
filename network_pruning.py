@@ -1,6 +1,8 @@
 from typing import Set
 import pandas as pd
+import numpy as np
 from BayesNet import BayesNet
+import itertools
 
 
 class FrenchPruning:
@@ -40,20 +42,62 @@ class FrenchPruning:
                 x = edge[1]
 
                 cpt = self._bn.get_cpt(variable=x)
-                print(cpt)
+                #print(cpt)
 
                 new_cpt = self._bn.get_compatible_instantiations_table(instantiation=pd.Series(data={u: value}, index=[u]), cpt=cpt)
 
                 self._bn.update_cpt(variable=x, cpt=new_cpt)
                 cpt = self._bn.get_cpt(variable=x)
-                print(cpt)
+                #print(cpt)
 
 
 
-    def multi_fly(self, factors: list[pd.DataFrame]):
-        all_columns = []
+    def multi_fly(self, factors: list[pd.DataFrame]) -> pd.DataFrame:
 
-        set([all_columns.extend(df.columns) for df in factors])
+        columns = set()
+
+        for factor in factors:
+            for col in factor.columns[:-1]:
+                columns.add(col)
+
+        table = list(itertools.product([False, True], repeat=len(columns)))
+        df = pd.DataFrame(columns=sorted(columns), data=table)
+        df['p'] = float(1.0)
+
+        for idx, row in df.iterrows():
+            vars, values, p_values = [], [], []
+
+            for var, value in row[:-1].items():
+                vars.append(var)
+                values.append(value)
+
+            instantiation = pd.Series(data=values, index=vars)
+
+            for factor in factors:
+                compatible = self._bn.get_compatible_instantiations_table(instantiation=instantiation, cpt=factor)
+                p_values.append(float(compatible['p']))
+
+            p = np.prod(p_values)
+            df.at[idx, 'p'] = p
+
+        return df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

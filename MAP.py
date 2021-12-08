@@ -1,6 +1,9 @@
+import itertools
+
 from BayesNet import BayesNet
 from typing import Set
 import pandas as pd
+
 
 
 class MAP:
@@ -42,7 +45,12 @@ class MAP:
 
         return cpt
 
-    def multi_fly(self):
-        pass
+
+
+
+
+
+
+
 
 
