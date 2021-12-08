@@ -5,8 +5,6 @@ from typing import Set
 import pandas as pd
 import numpy as np
 
-
-
 class MPE:
 
     def __init__(self):
@@ -17,82 +15,40 @@ class MPE:
     def run(self, bn: BayesNet, evidence: dict[str, bool]):
         self._bn = bn
         self._evidence = evidence
-        print(self._evidence)
-
-        for k,v in self._bn.get_all_cpts().items():
-            print(k,v)
 
         self._edge_pruning()
-
-        for k,v in self._bn.get_all_cpts().items():
-            print(k,v)
-
-        raise SystemExit
 
         Q = self._bn.get_all_variables()
         ordered_Q = self._ordering.min_degree(bn=self._bn, X=Q)
         cpts = self._bn.get_all_cpts()
-        print(f"Evidence: {self._evidence}")
-
-        for var, cpt in cpts.items():
-            new_cpt = self._bn.get_compatible_instantiations_table(instantiation=pd.Series(self._evidence), cpt=cpt)
-            self._bn.update_cpt(variable=var, cpt=new_cpt)
 
         print(f"Order: {ordered_Q}")
+        ordered_Q = ['J', 'I', 'X', 'Y', 'O']
+        print(f"Order: {ordered_Q}")
 
-        for variable in ordered_Q:
-            df_list = []
-            for cptippie in cpts.values():
-                if variable in cptippie.columns:
-                    df_list.append(cptippie)
 
-            f = self.multi_fly(factors=df_list)
-            print('THIS IS F________')
-            print(f)
-            cpt = self.super_max(cpt=f, variable=variable)
-
-            print('THIS IS MAX________')
-            print(cpt)
-            raise SystemExit
 
     def _edge_pruning(self):
 
-        for edge_list in [self._bn.get_edges_outgoing_from_var(variable=le_element) for le_element in
-                          self._evidence]:
+        all_edges = [self._bn.get_edges_outgoing_from_var(variable=var) for var in self._evidence]
 
-            print(f"----------------------------{edge_list}")
+        for edges_from_var in all_edges:
+            self._bn.del_edges(edges=edges_from_var)
 
+        for var, CPT in self._bn.get_all_cpts().items():
+            NEW_CPT = self._bn.get_compatible_instantiations_table(instantiation=pd.Series(self._evidence), cpt=CPT)
 
-            self._bn.del_edges(edges=edge_list)
+            for ev_var in self._evidence.keys():
+                if ev_var in NEW_CPT and ev_var != var:
+                    NEW_CPT = NEW_CPT.drop(ev_var, axis=1)
 
+            self._bn.update_cpt(variable=var, cpt=NEW_CPT)
 
-            for edge in edge_list:
-                #print(f"----------------------------{edge}")
-                u = edge[0]
-                value = self._evidence[u]
-                x = edge[1]
+    def _multi_fly(self, factors: list[pd.DataFrame]) -> pd.DataFrame:
+        if len(factors) == 1:
+            return factors[0]
+        #print(*factors, sep="\n\n")
 
-                cpt = self._bn.get_cpt(variable=x)
-                print("CPT:\n", cpt)
-                new_cpt = self._bn.get_compatible_instantiations_table(
-                    instantiation=pd.Series(data={u: value}, index=[u]), cpt=cpt)
-                print("new CPT:\n", new_cpt)
-
-                cpt = self._bn.get_cpt(variable=u)
-                print(f"---{pd.Series(data={u: value}, index=[u])}")
-                new_cpt = self._bn.get_compatible_instantiations_table(
-                    instantiation=pd.Series(data={u: value}, index=[u]), cpt=cpt)
-
-                raise SystemExit
-                # for var in self._evidence.keys():
-                #     if var in new_cpt.columns and var != x:
-                #
-                #         new_cpt = new_cpt.drop(var, axis=1)
-
-                self._bn.update_cpt(variable=x, cpt=new_cpt)
-
-    def multi_fly(self, factors: list[pd.DataFrame]) -> pd.DataFrame:
-        print(*factors, sep="\n\n")
         columns = set()
 
         for factor in factors:
@@ -102,7 +58,9 @@ class MPE:
         table = list(itertools.product([False, True], repeat=len(columns)))
         df = pd.DataFrame(columns=sorted(columns), data=table)
         df['p'] = float(1.0)
-        print(df)
+
+        df = self._bn.get_compatible_instantiations_table(instantiation=pd.Series(self._evidence), cpt=df)
+
         for idx, row in df.iterrows():
             vars, values, p_values = [], [], []
 
@@ -111,12 +69,12 @@ class MPE:
                 values.append(value)
 
             instantiation = pd.Series(data=values, index=vars)
-            print(f"instantiation: {instantiation}")
+            #print(f"instantiation: {instantiation}")
 
             for factor in factors:
                 compatible = self._bn.get_compatible_instantiations_table(instantiation=instantiation, cpt=factor)
-                print(compatible)
-                print("--------------")
+                #print(compatible)
+                #print("--------------")
                 p_values.append(float(compatible['p']))
 
             p = np.prod(p_values)
@@ -124,11 +82,17 @@ class MPE:
 
         return df
 
-    def super_max(self, cpt: pd.DataFrame, variable: str):
+    def _super_max(self, cpt: pd.DataFrame, variable: str):
 
         s1 = cpt.loc[cpt[variable] == True].max().to_frame()
         s2 = cpt.loc[cpt[variable] == False].max().to_frame()
 
-        cpt = pd.concat([s1, s2], axis=1).reset_index().transpose()
+        #print(s1.transpose())
+        #print("\n")
+        #print(s2.transpose())
+        #print("\n")
+
+        cpt = pd.concat([s1, s2], axis=1).transpose().reset_index().drop('index', axis=1).dropna()
 
         return cpt
+
