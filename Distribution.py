@@ -45,8 +45,17 @@ class Distribution:
         for i in range(len(S_list) - 1):
             result_cpt = self._multiply_factors(result_cpt, cpt2=S_list[i + 1])
 
-        # Remove all unwanted columns
-        result_cpt.drop(result_cpt.columns.difference(list(Q) + ['p']), 1, inplace=True)
+        evidence_prob = 1
+        # If evidence is given, compute the prob
+        if E:
+            evidence_vars_cpt = self.joint_marginal(
+                Q=set(E.keys()),
+                E=dict()
+            )
+            for var, assignment in E.items():
+                evidence_vars_cpt = evidence_vars_cpt[evidence_vars_cpt[var] == assignment]
+            evidence_prob = evidence_vars_cpt.iloc[0]['p']
+        result_cpt['p'] /= evidence_prob
         return result_cpt
 
 
