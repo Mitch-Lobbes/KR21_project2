@@ -1,5 +1,7 @@
 from typing import Set, Tuple
 import pandas as pd
+from sklearn import preprocessing
+import copy
 
 from BNUtils import BNUtils
 from BayesNet import BayesNet
@@ -11,36 +13,51 @@ class Distribution:
     def __init__(self, bn: BayesNet):
         self.bn = bn
 
+    def calculate_evidence_prob(self, E: dict[str, bool]) -> float:
+        pass
+
     def joint_marginal(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
         order = Ordering().min_degree(
             bn=self.bn,
             X=list(set(self.bn.get_all_variables()) - Q)
         )
         S = self.bn.get_all_cpts()
-        S_list = list(S.values())
         for var, cpt in S.items():
-            self._remove_evidence_row(cpt=cpt, E=E)
-
+            S[var] = self._remove_evidence_row(cpt=cpt, E=E)
+        counter = 0
         for variable in order:
-            cpts_with_var = self._cpts_containing_var(cpts=S_list, variable=variable)
-            f = cpts_with_var[0]
+            cpts_with_var = self._cpts_containing_var(S, variable=variable)
+            cpt_list = list(cpts_with_var.values())
+            f = cpt_list[0]
             for i in range(len(cpts_with_var) - 1):
-                f = self._multiply_factors(f, cpt2=cpts_with_var[i + 1])
+                f = self._multiply_factors(f, cpt2=cpt_list[i + 1])
             f_i = self._sum_out_var(cpt=f, variable=variable)
+            for var, cpt in cpts_with_var.items():
+                del S[var]
+            S[str(counter)] = f_i
+            counter += 1
 
+            #S[variable] = f_i
+
+            x = 5
+        S_list = list(S.values())
         result_cpt = S_list[0]
         for i in range(len(S_list) - 1):
             result_cpt = self._multiply_factors(result_cpt, cpt2=S_list[i + 1])
+
+        # Remove all unwanted columns
+        result_cpt.drop(result_cpt.columns.difference(list(Q) + ['p']), 1, inplace=True)
         return result_cpt
 
 
-    def _cpts_containing_var(self, cpts: list[pd.DataFrame], variable:str) -> list[pd.DataFrame]:
-        return [cpt for cpt in cpts if variable in cpt.columns]
+    def _cpts_containing_var(self, cpts: dict[str, pd.DataFrame], variable:str) -> dict[str, pd.DataFrame]:
+        return {var: cpt for var, cpt in cpts.items() if variable in cpt.columns}
 
     def _remove_evidence_row(self, cpt: pd.DataFrame, E: dict[str, bool]) -> pd.DataFrame:
         for evidence_var, evidence_assignment in E.items():
             if evidence_var in cpt.columns:
-                cpt = cpt[cpt[evidence_var] == evidence_assignment]
+                cpt.loc[cpt[evidence_var] != evidence_assignment, 'p'] = 0
+                #cpt = cpt[cpt[evidence_var] == evidence_assignment]
         return cpt
 
     def marginal_distribution(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
@@ -81,6 +98,7 @@ class Distribution:
         Returns:
             pd.DataFrame: cpt after summing out the variable
         """
+        cpt = copy.deepcopy(cpt)
         mask = cpt[variable] == True
         var_true_df = cpt[mask].drop(variable, axis=1)
         var_false_df = cpt[~mask].drop(variable, axis=1)
@@ -88,6 +106,7 @@ class Distribution:
         columns = [col for col in var_true_df.columns if col != 'p']
 
         resulting_df = pd.concat([var_true_df, var_false_df]).groupby(columns, as_index=False)["p"].sum()
+        cpt = resulting_df
         return resulting_df
 
     def _multiply_factors(self, cpt1: pd.DataFrame, cpt2: pd.DataFrame) -> pd.DataFrame:
@@ -100,8 +119,10 @@ class Distribution:
         Returns:
             pd.DataFrame: cpt after multiplying cpt1 and cpt2
         """
+        cpt1 = copy.deepcopy(cpt1)
+        cpt2 = copy.deepcopy(cpt2)
         common_vars = list(
-            set([col for col in f1.columns if col != 'p']) & set([col for col in f2.columns if col != 'p']))
+            set([col for col in cpt1.columns if col != 'p']) & set([col for col in cpt2.columns if col != 'p']))
 
         merged_df = pd.merge(cpt1, cpt2, on=common_vars)
         merged_df['p'] = (merged_df['p_x'] * merged_df['p_y'])

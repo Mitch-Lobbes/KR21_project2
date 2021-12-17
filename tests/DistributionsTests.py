@@ -12,7 +12,7 @@ class DistributionsTests(unittest.TestCase):
         self.distribution = Distribution(bn=self.reasoner.bn)
 
     def test_marginal_distribution(self):
-        Q = {"Rain?"}
-        E = {"Winter?": True}
+        Q = {"Wet Grass?", "Slippery Road?"}
+        E = {"Winter?": True, "Sprinkler?": False}
         result = self.distribution.joint_marginal(Q=Q, E=E)
         x = 5
