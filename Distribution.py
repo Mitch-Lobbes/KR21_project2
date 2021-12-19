@@ -16,7 +16,13 @@ class Distribution:
     def calculate_evidence_prob(self, E: dict[str, bool]) -> float:
         pass
 
-    def joint_marginal(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
+    def posterior_marginal(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
+        """Compute the posterior marginal P(Q|E)
+
+        :param Q: Set of query variables
+        :param E: Dict of evidence of variables with their assignment
+        :return: DataFrame of the marginal distribution
+        """
         order = Ordering().min_degree(
             bn=self.bn,
             X=list(set(self.bn.get_all_variables()) - Q)
@@ -44,7 +50,7 @@ class Distribution:
         evidence_prob = 1
         # If evidence is given, compute the prob
         if E:
-            evidence_vars_cpt = self.joint_marginal(
+            evidence_vars_cpt = self.posterior_marginal(
                 Q=set(E.keys()),
                 E=dict()
             )

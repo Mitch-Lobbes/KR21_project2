@@ -14,5 +14,5 @@ class DistributionsTests(unittest.TestCase):
     def test_marginal_distribution(self):
         Q = {"Wet Grass?", "Slippery Road?"}
         E = {"Winter?": True, "Sprinkler?": False}
-        result = self.distribution.joint_marginal(Q=Q, E=E)
+        result = self.distribution.posterior_marginal(Q=Q, E=E)
         x = 5
