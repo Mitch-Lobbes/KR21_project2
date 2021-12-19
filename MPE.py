@@ -4,6 +4,7 @@ from BayesNet import BayesNet
 from typing import Set
 import pandas as pd
 import numpy as np
+from functools import reduce
 
 class MPE:
 
@@ -11,22 +12,32 @@ class MPE:
         self._bn: BayesNet
         self._evidence: dict[str, bool]
         self._ordering = Ordering()
+        self._value_dict = {}
 
-    def run(self, bn: BayesNet, evidence: dict[str, bool]):
+    def run(self, bn: BayesNet, evidence: dict[str, bool], order: list[str]):
         self._bn = bn
         self._evidence = evidence
 
         self._edge_pruning()
 
-        Q = self._bn.get_all_variables()
-        ordered_Q = self._ordering.min_degree(bn=self._bn, X=Q)
-        cpts = self._bn.get_all_cpts()
+        #query = self._bn.get_all_variables()
+        #ordered_query = self._ordering.min_fill(bn=self._bn, X=query)
+        cpt_list = list(self._bn.get_all_cpts().values())
 
-        print(f"Order: {ordered_Q}")
-        ordered_Q = ['J', 'I', 'X', 'Y', 'O']
-        print(f"Order: {ordered_Q}")
+        for variable in order:
+            factors = self._all_cpt_containing_var(cpt_list=cpt_list, variable=variable)
+            headers = [list(cpt.columns) for cpt in factors]
+            product = self._multiply(factors=factors)
+            new_cpt = self._super_max(cpt=product, variable=variable)
 
+            cpt_list = [cpt for cpt in cpt_list if list(cpt.columns) not in headers]
 
+            cpt_list.append(new_cpt)
+
+        trivial = pd.DataFrame({'p': [1.0], 'MPE': [self._value_dict]})
+        trivial['p'] = [cpt_list[i].iloc[0]['p']*cpt_list[i+1].iloc[0]['p'] for i in range(len(cpt_list)-1)]
+        print(f'\nThis is the MPE given the evidence {self._evidence}: \n {trivial}')
+        return trivial
 
     def _edge_pruning(self):
 
@@ -44,55 +55,39 @@ class MPE:
 
             self._bn.update_cpt(variable=var, cpt=NEW_CPT)
 
-    def _multi_fly(self, factors: list[pd.DataFrame]) -> pd.DataFrame:
-        if len(factors) == 1:
-            return factors[0]
-        #print(*factors, sep="\n\n")
+    @staticmethod
+    def _all_cpt_containing_var(cpt_list: list[pd.DataFrame], variable: str) -> list[pd.DataFrame]:
+        return [cpt for cpt in cpt_list if variable in cpt.columns]
 
-        columns = set()
+    @staticmethod
+    def _multiply(factors: list[pd.DataFrame]) -> pd.DataFrame:
+        common_vars = reduce(np.intersect1d, ([factor.columns for factor in factors]))
+        common_vars = list(np.delete(common_vars, np.where(common_vars == 'p')))
 
-        for factor in factors:
-            for col in factor.columns[:-1]:
-                columns.add(col)
+        merged_df = factors[0]
 
-        table = list(itertools.product([False, True], repeat=len(columns)))
-        df = pd.DataFrame(columns=sorted(columns), data=table)
-        df['p'] = float(1.0)
+        for factor in factors[1:]:
+            merged_df = pd.merge(merged_df, factor, on=common_vars)
+            merged_df['p'] = (merged_df['p_x'] * merged_df['p_y'])
+            merged_df.drop(['p_x', 'p_y'], inplace=True, axis=1)
 
-        df = self._bn.get_compatible_instantiations_table(instantiation=pd.Series(self._evidence), cpt=df)
 
-        for idx, row in df.iterrows():
-            vars, values, p_values = [], [], []
+        merged_df['p'] = merged_df['p'].astype(float)
 
-            for var, value in row[:-1].items():
-                vars.append(var)
-                values.append(value)
 
-            instantiation = pd.Series(data=values, index=vars)
-            #print(f"instantiation: {instantiation}")
-
-            for factor in factors:
-                compatible = self._bn.get_compatible_instantiations_table(instantiation=instantiation, cpt=factor)
-                #print(compatible)
-                #print("--------------")
-                p_values.append(float(compatible['p']))
-
-            p = np.prod(p_values)
-            df.at[idx, 'p'] = p
-
-        return df
+        return merged_df
 
     def _super_max(self, cpt: pd.DataFrame, variable: str):
 
-        s1 = cpt.loc[cpt[variable] == True].max().to_frame()
-        s2 = cpt.loc[cpt[variable] == False].max().to_frame()
+        values = cpt[variable].unique()
+        indices = [cpt.loc[cpt[variable] == value]['p'].idxmax() for value in values]
+        maximums = [cpt.loc[index] for index in indices]
+        cpt = pd.concat(maximums, axis=1).transpose().reset_index().drop('index', axis=1).dropna()
 
-        #print(s1.transpose())
-        #print("\n")
-        #print(s2.transpose())
-        #print("\n")
+        for idx, row in cpt.iterrows():
+            self._value_dict[variable] = cpt.to_dict('records')[idx][variable]
 
-        cpt = pd.concat([s1, s2], axis=1).transpose().reset_index().drop('index', axis=1).dropna()
+        cpt = cpt.drop(columns=variable, axis=1)
 
         return cpt
 
