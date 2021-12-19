@@ -11,6 +11,6 @@ for filename in glob.iglob(PATH, recursive=True):
         with open(filename) as f:
             bn_file = f.read()
         bif_reader = BIFReader(string=bn_file)
-        model = model = bif_reader.get_model()
+        model = bif_reader.get_model()
         writer = XMLBIFWriter(model)
         writer.write_xmlbif(f"{filename}.BIFXML")

@@ -1,3 +1,5 @@
+import random
+import copy
 from networkx import DiGraph, Graph
 
 from BayesNet import BayesNet
@@ -9,6 +11,7 @@ class Ordering:
         pass
 
     def min_degree(self, bn: BayesNet , X: list[str]) -> list[str]:
+        X = copy.deepcopy(X)
         interaction_graph = bn.get_interaction_graph()
         order = []
 
@@ -22,6 +25,7 @@ class Ordering:
         return order
 
     def min_fill(self, bn: BayesNet, X: list[str]) -> list[str]:
+        X = copy.deepcopy(X)
         interaction_graph = bn.get_interaction_graph()
         order = []
 
@@ -33,6 +37,14 @@ class Ordering:
             order.append(node)
 
         return order
+
+    def random_orderings(self, X: list[str], amount: int) -> list[list[str]]:
+        X = copy.deepcopy(X)
+        list_of_orderings = []
+        for _ in range(amount):
+            order = random.shuffle(X)
+            list_of_orderings.append(order)
+        return list_of_orderings
 
             
     def _get_node_with_smallest_nbr_neighbors(self, interaction_graph: Graph, X: list[str]) -> str:
