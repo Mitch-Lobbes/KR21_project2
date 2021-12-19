@@ -36,10 +36,6 @@ class Distribution:
                 del S[var]
             S[str(counter)] = f_i
             counter += 1
-
-            #S[variable] = f_i
-
-            x = 5
         S_list = list(S.values())
         result_cpt = S_list[0]
         for i in range(len(S_list) - 1):
@@ -66,36 +62,7 @@ class Distribution:
         for evidence_var, evidence_assignment in E.items():
             if evidence_var in cpt.columns:
                 cpt.loc[cpt[evidence_var] != evidence_assignment, 'p'] = 0
-                #cpt = cpt[cpt[evidence_var] == evidence_assignment]
         return cpt
-
-    def marginal_distribution(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
-        """ Given query variables Q and a possibly empty evidence E, compute the marginal distribution P(Q|E)
-
-        :param Q: Query variables
-        :param E: Evidence variables
-        :return: Marginal distribution P(Q|E)
-        """
-
-        return 5
-
-    def _multiply_out_var(self, cpt: pd.DataFrame, evidence_variable: Tuple[str, bool], variable_prop: float) -> pd.DataFrame:
-        # Remove all rows where the evidence value is wrong
-        cpt = cpt[cpt[evidence_variable[0]] == evidence_variable[1]]
-        # Delete column with evidence var
-        cpt = cpt.drop(evidence_variable[0], 1)
-        # Multiply p values with given value
-        cpt['p'] *= variable_prop
-        return cpt
-
-    def _get_vars_to_marginalize_out(self, Q: Set[str], E: dict[str, bool]) -> Set[str]:
-        all_vars = set(self.bn.get_all_variables())
-        return all_vars - (set(E.keys()) | Q)
-
-    def _marginalize_out(self, var: str):
-        for key, cpt in self.bn.get_all_cpts().items():
-            cpt = BNUtils.sum_out_var(cpt=cpt, variable=var)
-            self.bn.update_cpt(cpt=cpt, variable=var)
 
     def _sum_out_var(self, cpt: pd.DataFrame, variable: str) -> pd.DataFrame:
         """Sum out a variable from a conditional probability table (CPT)
