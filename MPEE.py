@@ -1,5 +1,5 @@
 import itertools
-from ordering import Ordering
+from Ordering import Ordering
 from BayesNet import BayesNet
 from typing import Set
 import pandas as pd

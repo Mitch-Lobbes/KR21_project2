@@ -1,7 +1,7 @@
 from BNReasoner import BNReasoner
 import pandas as pd
-from ordering import Ordering
-from d_separation import DSeparated
+from Ordering import Ordering
+from DSeparated import DSeparated
 import networkx as nx
 
 NETWORK = "testing/dog_problem.BIFXML"

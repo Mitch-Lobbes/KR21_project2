@@ -1,7 +1,7 @@
 import random
 from BayesNet import BayesNet
 from MPE import MPE
-from ordering import Ordering
+from Ordering import Ordering
 
 
 NETWORK = "testing/lecture_example2.BIFXML"

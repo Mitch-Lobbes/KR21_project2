@@ -5,16 +5,13 @@ import copy
 
 from BNUtils import BNUtils
 from BayesNet import BayesNet
-from ordering import Ordering
+from Ordering import Ordering
 
 
 class Distribution:
 
     def __init__(self, bn: BayesNet):
         self.bn = bn
-
-    def calculate_evidence_prob(self, E: dict[str, bool]) -> float:
-        pass
 
     def posterior_marginal(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
         """Compute the posterior marginal P(Q|E)
@@ -36,8 +33,8 @@ class Distribution:
             cpt_list = list(cpts_with_var.values())
             f = cpt_list[0]
             for i in range(len(cpts_with_var) - 1):
-                f = self._multiply_factors(f, cpt2=cpt_list[i + 1])
-            f_i = self._sum_out_var(cpt=f, variable=variable)
+                f = BNUtils.multiply_factors(f, cpt2=cpt_list[i + 1])
+            f_i = BNUtils.sum_out_var(cpt=f, variable=variable)
             for var, cpt in cpts_with_var.items():
                 del S[var]
             S[str(counter)] = f_i
@@ -45,7 +42,7 @@ class Distribution:
         S_list = list(S.values())
         result_cpt = S_list[0]
         for i in range(len(S_list) - 1):
-            result_cpt = self._multiply_factors(result_cpt, cpt2=S_list[i + 1])
+            result_cpt = BNUtils.multiply_factors(result_cpt, cpt2=S_list[i + 1])
 
         evidence_prob = 1
         # If evidence is given, compute the prob
@@ -70,44 +67,4 @@ class Distribution:
                 cpt.loc[cpt[evidence_var] != evidence_assignment, 'p'] = 0
         return cpt
 
-    def _sum_out_var(self, cpt: pd.DataFrame, variable: str) -> pd.DataFrame:
-        """Sum out a variable from a conditional probability table (CPT)
 
-        Args:
-            cpt (pd.DataFrame): Pandas DataFrame representation of the cpt
-            variable (str): Variable to sum out
-
-        Returns:
-            pd.DataFrame: cpt after summing out the variable
-        """
-        cpt = copy.deepcopy(cpt)
-        mask = cpt[variable] == True
-        var_true_df = cpt[mask].drop(variable, axis=1)
-        var_false_df = cpt[~mask].drop(variable, axis=1)
-
-        columns = [col for col in var_true_df.columns if col != 'p']
-
-        resulting_df = pd.concat([var_true_df, var_false_df]).groupby(columns, as_index=False)["p"].sum()
-        cpt = resulting_df
-        return resulting_df
-
-    def _multiply_factors(self, cpt1: pd.DataFrame, cpt2: pd.DataFrame) -> pd.DataFrame:
-        """Multiply two given factors
-
-        Args:
-            cpt1 (pd.DataFrame): Pandas DataFrame representation of first cpt
-            cpt1 (pd.DataFrame): Pandas DataFrame representation of second cpt
-
-        Returns:
-            pd.DataFrame: cpt after multiplying cpt1 and cpt2
-        """
-        cpt1 = copy.deepcopy(cpt1)
-        cpt2 = copy.deepcopy(cpt2)
-        common_vars = list(
-            set([col for col in cpt1.columns if col != 'p']) & set([col for col in cpt2.columns if col != 'p']))
-
-        merged_df = pd.merge(cpt1, cpt2, on=common_vars)
-        merged_df['p'] = (merged_df['p_x'] * merged_df['p_y'])
-        merged_df.drop(['p_x', 'p_y'], inplace=True, axis=1)
-
-        return merged_df
