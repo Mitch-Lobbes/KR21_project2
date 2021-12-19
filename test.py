@@ -1,64 +1,31 @@
-import pandas as pd
-
-from BNReasoner import BNReasoner
+import random
 from BayesNet import BayesNet
-from d_separation import DSeparated
-from network_pruning import FrenchPruning
 from MPE import MPE
+from ordering import Ordering
+
 
 NETWORK = "testing/lecture_example2.BIFXML"
 
 
-test = BayesNet()
-test.load_from_bifxml(file_path=NETWORK)
+test1, test2, test3 = BayesNet(), BayesNet(), BayesNet()
 
+test1.load_from_bifxml(file_path=NETWORK)
+test2.load_from_bifxml(file_path=NETWORK)
+test3.load_from_bifxml(file_path=NETWORK)
+
+ordering = Ordering()
+
+query1 = test1.get_all_variables()
+query2 = test2.get_all_variables()
+query3 = test3.get_all_variables()
+random.shuffle(query3)
+
+orderings = [(test1, ordering.min_degree(bn=test1, X=query1)),
+             (test2, ordering.min_fill(bn=test2, X=query2)),
+             (test3, query3)]
 mpe = MPE()
 
-mpe.run(test, evidence={'J': True, 'O': False})
+for tup in orderings:
+    mpe.run(tup[0], evidence={'J': True, 'O': False}, order=tup[1])
 
 
-raise SystemExit
-
-#test.create_bn(variables = ["R", "E", "A", "C", "B"], edges = [("E", "R"), ("E", "A"), ("B", "A"), ("A", "C")], cpts = {'R': [1, 2], 'E': [3,4], 'A': [5,6], "C": [3,4], "B": [8,9]})
-pruning = FrenchPruning()
-
-pruning.run(bn=test, query={'Wet Grass?'}, evidence={'Winter?': True, 'Rain?': False})
-
-data_1 = {'B': [True, True, True, True, False, False, False, False],
-          'C': [True, True, False, False, True, True, False, False],
-          'D': [True, False, True, False, True, False, True, False],
-          'p': [0.95, 0.05, 0.9, 0.1, 0.8, 0.2, 0, 1]}
-
-df_1 = pd.DataFrame(data=data_1)
-
-data_2 = {'D': [True, True, False, False],
-          'E': [True, False, True, False],
-          'p': [0.448, 0.192, 0.112, 0.248]}
-
-df_2 = pd.DataFrame(data=data_2)
-
-factors = [df_1, df_2]
-
-f = pruning.multi_fly(factors=factors)
-
-print(f)
-
-#test.draw_structure()
-
-#reasoner = BNReasoner(test)
-#
-# d_seperator = DSeparated()
-#
-#
-# X = set('R')
-# Y = set('C')
-# Z = set([])
-#
-# result = d_seperator.d_separated(
-#     bayesNet=reasoner.bn,
-#     X=X,
-#     Z=Z,
-#     Y=Y
-# )
-#
-# print(result)
