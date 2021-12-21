@@ -40,7 +40,8 @@ class BNUtils:
         cpt2 = copy.deepcopy(cpt2)
         common_vars = list(
             set([col for col in cpt1.columns if col != 'p']) & set([col for col in cpt2.columns if col != 'p']))
-
+        if not common_vars:
+            return pd.merge(cpt1, cpt2, on=['p'])
         merged_df = pd.merge(cpt1, cpt2, on=common_vars)
         merged_df['p'] = (merged_df['p_x'] * merged_df['p_y'])
         merged_df.drop(['p_x', 'p_y'], inplace=True, axis=1)

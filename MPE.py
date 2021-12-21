@@ -106,9 +106,6 @@ class MPE:
         if len(cols) != 0:
             cpt = cpt.sort_values(by=['p'])
 
-            cols = [col for col in cpt.columns[:-1] if col != variable]
-
-
             unique_vals2 = cpt.drop_duplicates(subset=cols, keep="last")
 
             unique_vals2 = unique_vals2.drop(columns=variable)

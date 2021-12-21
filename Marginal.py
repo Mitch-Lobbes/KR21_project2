@@ -8,22 +8,24 @@ from BayesNet import BayesNet
 from Ordering import Ordering
 
 
-class Distribution:
+class Marginal:
 
     def __init__(self, bn: BayesNet):
         self.bn = bn
 
-    def posterior_marginal(self, Q: Set[str], E: dict[str, bool]) -> pd.DataFrame:
+    def posterior_marginal(self, Q: Set[str], E: dict[str, bool], order: list = None) -> pd.DataFrame:
         """Compute the posterior marginal P(Q|E)
 
         :param Q: Set of query variables
         :param E: Dict of evidence of variables with their assignment
+        :param order: Optional ordering set
         :return: DataFrame of the marginal distribution
         """
-        order = Ordering().min_degree(
-            bn=self.bn,
-            X=list(set(self.bn.get_all_variables()) - Q)
-        )
+        if not order:
+            order = Ordering().min_degree(
+                bn=self.bn,
+                X=list(set(self.bn.get_all_variables()) - Q)
+            )
         S = self.bn.get_all_cpts()
         for var, cpt in S.items():
             S[var] = self._remove_evidence_row(cpt=cpt, E=E)
