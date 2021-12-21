@@ -21,8 +21,10 @@ class BNUtils:
 
         columns = [col for col in var_true_df.columns if col != 'p']
 
+        if not columns:
+            return pd.DataFrame.from_dict({'p': [1]})
+
         resulting_df = pd.concat([var_true_df, var_false_df]).groupby(columns, as_index=False)["p"].sum()
-        cpt = resulting_df
         return resulting_df
 
     @staticmethod
@@ -38,6 +40,11 @@ class BNUtils:
         """
         cpt1 = copy.deepcopy(cpt1)
         cpt2 = copy.deepcopy(cpt2)
+        if type(cpt1) is pd.Series:
+            cpt1 = cpt1.to_frame().T
+        if type(cpt2) is pd.Series:
+            cpt2 = cpt2.to_frame().T
+
         common_vars = list(
             set([col for col in cpt1.columns if col != 'p']) & set([col for col in cpt2.columns if col != 'p']))
         if not common_vars:

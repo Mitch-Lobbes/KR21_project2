@@ -1,3 +1,4 @@
+import copy
 from typing import Set, Tuple
 import pandas as pd
 
@@ -20,7 +21,7 @@ class MAP:
         most_likely_instantiation = post_marginal.loc[post_marginal['p'].idxmax()]
         return most_likely_instantiation.to_dict()
 
-    def MAP(self, M: Set[str], E: dict[str, bool]) -> Tuple[float, dict[str, bool]]:
+    def MAP(self, M: Set[str], E: dict[str, bool], order: list[str] = None) -> Tuple[float, dict[str, bool]]:
         assignments = dict()
 
         self._evidence = E
@@ -31,8 +32,9 @@ class MAP:
             query=M,
             evidence=E
         )
-        order = list(set(self._bn.get_all_variables()) - M)
-        order.extend(M)
+        if not order:
+            order = list(set(self._bn.get_all_variables()) - M)
+            order.extend(M)
 
         S = self._bn.get_all_cpts()
         for var, cpt in S.items():
@@ -40,6 +42,8 @@ class MAP:
         counter = 0
         for var in order:
             cpts_with_var = self._cpts_containing_var(S, variable=var)
+            if not cpts_with_var:
+                continue
             cpt_list = list(cpts_with_var.values())
             f = cpt_list[0]
             for i in range(len(cpts_with_var) - 1):
@@ -60,7 +64,12 @@ class MAP:
         return result_cpt['p'], assignments
 
     def _cpts_containing_var(self, cpts: dict[str, pd.DataFrame], variable: str) -> dict[str, pd.DataFrame]:
-        return {var: cpt for var, cpt in cpts.items() if variable in cpt.columns}
+        cpts_containing_var = dict()
+        for var, cpt in cpts.items():
+            if type(cpt) is pd.Series or variable not in cpt.columns:
+                continue
+            cpts_containing_var[var] = cpt
+        return cpts_containing_var
 
     def _remove_evidence_row(self, cpt: pd.DataFrame, E: dict[str, bool]) -> pd.DataFrame:
         for evidence_var, evidence_assignment in E.items():
