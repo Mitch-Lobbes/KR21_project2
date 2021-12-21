@@ -1,0 +1,357 @@
+File: Example Generator 5 Nodes
+Heuristic: Degree
+# Variables: 5
+Runtime: 0.028411149978637695
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Fill
+# Variables: 5
+Runtime: 0.03825569152832031
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Random
+# Variables: 5
+Runtime: 0.026105642318725586
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Degree
+# Variables: 10
+Runtime: 0.07027626037597656
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Fill
+# Variables: 10
+Runtime: 0.07378005981445312
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Random
+# Variables: 10
+Runtime: 0.06700077056884765
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Degree
+# Variables: 15
+Runtime: 0.09573197364807129
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Fill
+# Variables: 15
+Runtime: 0.10247182846069336
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Random
+# Variables: 15
+Runtime: 0.09783103466033935
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Degree
+# Variables: 20
+Runtime: 0.14963984489440918
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Fill
+# Variables: 20
+Runtime: 0.15494894981384277
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Random
+# Variables: 20
+Runtime: 0.16608223915100098
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Degree
+# Variables: 25
+Runtime: 0.19089388847351074
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Fill
+# Variables: 25
+Runtime: 0.1910991668701172
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Random
+# Variables: 25
+Runtime: 0.2508636474609375
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Degree
+# Variables: 30
+Runtime: 0.22488999366760254
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Fill
+# Variables: 30
+Runtime: 0.23221611976623535
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Random
+# Variables: 30
+Runtime: 0.7745557308197022
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Degree
+# Variables: 35
+Runtime: 0.46269798278808594
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Fill
+# Variables: 35
+Runtime: 0.29253315925598145
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Random
+# Variables: 35
+Runtime: 7.80642671585083
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Degree
+# Variables: 40
+Runtime: 0.7957079410552979
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Fill
+# Variables: 40
+Runtime: 0.5245339870452881
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Degree
+# Variables: 5
+Runtime: 0.0341639518737793
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Fill
+# Variables: 5
+Runtime: 0.03191661834716797
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Random
+# Variables: 5
+Runtime: 0.032332968711853025
+------------------------------------------------------------
+/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/MPE.py:98: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  merged_df['p'] = merged_df['p'].astype(float)
+File: Example Generator 10 Nodes
+Heuristic: Degree
+# Variables: 10
+Runtime: 0.068572998046875
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Fill
+# Variables: 10
+Runtime: 0.062283992767333984
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Random
+# Variables: 10
+Runtime: 0.0636378288269043
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Degree
+# Variables: 15
+Runtime: 0.10660290718078613
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Fill
+# Variables: 15
+Runtime: 0.15950584411621094
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Random
+# Variables: 15
+Runtime: 0.1048639440536499
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Degree
+# Variables: 20
+Runtime: 0.15613794326782227
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Fill
+# Variables: 20
+Runtime: 0.17344284057617188
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Random
+# Variables: 20
+Runtime: 0.1729876470565796
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Degree
+# Variables: 25
+Runtime: 0.2718050479888916
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Fill
+# Variables: 25
+Runtime: 0.3018171787261963
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Random
+# Variables: 25
+Runtime: 0.4166508913040161
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Degree
+# Variables: 30
+Runtime: 0.29046130180358887
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Fill
+# Variables: 30
+Runtime: 0.2663459777832031
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Random
+# Variables: 30
+Runtime: 3.096748027801514
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Degree
+# Variables: 35
+Runtime: 0.31694698333740234
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Fill
+# Variables: 35
+Runtime: 0.3269369602203369
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Random
+# Variables: 35
+Runtime: 26.11791625022888
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Degree
+# Variables: 40
+Runtime: 0.4034290313720703
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Fill
+# Variables: 40
+Runtime: 0.34505391120910645
+/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/MPE.py:98: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  merged_df['p'] = merged_df['p'].astype(float)
+File: Example Generator 5 Nodes
+Heuristic: Degree
+# Variables: 5
+Runtime: 0.024224634170532226
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Fill
+# Variables: 5
+Runtime: 0.02442502498626709
+------------------------------------------------------------
+File: Example Generator 5 Nodes
+Heuristic: Random
+# Variables: 5
+Runtime: 0.0239223051071167
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Degree
+# Variables: 10
+Runtime: 0.05546354293823242
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Fill
+# Variables: 10
+Runtime: 0.055252723693847657
+------------------------------------------------------------
+File: Example Generator 10 Nodes
+Heuristic: Random
+# Variables: 10
+Runtime: 0.055743441581726075
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Degree
+# Variables: 15
+Runtime: 0.10960419178009033
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Fill
+# Variables: 15
+Runtime: 0.10894662857055665
+------------------------------------------------------------
+File: Example Generator 15 Nodes
+Heuristic: Random
+# Variables: 15
+Runtime: 0.11162259101867676
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Degree
+# Variables: 20
+Runtime: 0.13241652488708497
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Fill
+# Variables: 20
+Runtime: 0.1325468349456787
+------------------------------------------------------------
+File: Example Generator 20 Nodes
+Heuristic: Random
+# Variables: 20
+Runtime: 0.14230809688568116
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Degree
+# Variables: 25
+Runtime: 0.23422173500061036
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Fill
+# Variables: 25
+Runtime: 0.23132236003875734
+------------------------------------------------------------
+File: Example Generator 25 Nodes
+Heuristic: Random
+# Variables: 25
+Runtime: 0.7441509962081909
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Degree
+# Variables: 30
+Runtime: 0.21953582763671875
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Fill
+# Variables: 30
+Runtime: 0.22063642978668213
+------------------------------------------------------------
+File: Example Generator 30 Nodes
+Heuristic: Random
+# Variables: 30
+Runtime: 1.6792025089263916
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Degree
+# Variables: 35
+Runtime: 0.26385112762451174
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Fill
+# Variables: 35
+Runtime: 0.2647183609008789
+------------------------------------------------------------
+File: Example Generator 35 Nodes
+Heuristic: Random
+# Variables: 35
+Runtime: 8.385221614837647
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Degree
+# Variables: 40
+Runtime: 0.31724456787109373
+------------------------------------------------------------
+File: Example Generator 40 Nodes
+Heuristic: Fill
+# Variables: 40
+Runtime: 0.31444629192352297
+------------------------------------------------------------
+

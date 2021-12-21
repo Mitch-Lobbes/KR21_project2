@@ -1,10 +1,9 @@
 import itertools
 from Ordering import Ordering
 from BayesNet import BayesNet
-from typing import Set
 import pandas as pd
 import numpy as np
-from functools import reduce
+
 
 class MPE:
 
@@ -14,29 +13,53 @@ class MPE:
         self._ordering = Ordering()
         self._value_dict = {}
 
-    def run(self, bn: BayesNet, evidence: dict[str, bool], order: list[str]):
+    def run(self, bn: BayesNet, evidence: dict[str, bool], order: list):
+        # Assign class attributes
         self._bn = bn
         self._evidence = evidence
 
+        # Pruning
         self._edge_pruning()
 
-        #query = self._bn.get_all_variables()
-        #ordered_query = self._ordering.min_fill(bn=self._bn, X=query)
+        # Determine Order
+        query = self._bn.get_all_variables()
+
+        # Different Order Heuristic
+        # heuristic = order
+        # ordered_query = self._ordering.min_degree(bn=self._bn, X=query) if heuristic == 0 \
+        #     else self._ordering.min_degree(bn=self._bn, X=query)
+        ordered_query = order
+
+        # Get all CPTs of the Network
         cpt_list = list(self._bn.get_all_cpts().values())
 
-        for variable in order:
-            factors = self._all_cpt_containing_var(cpt_list=cpt_list, variable=variable)
+        # Start Loop
+        for variable in ordered_query:
+
+            # Get all factors containing given variable
+            factors = self.all_cpt_containing_var(cpt_list=cpt_list, variable=variable)
+
+            # Store current factors
             headers = [list(cpt.columns) for cpt in factors]
-            product = self._multiply(factors=factors)
-            new_cpt = self._super_max(cpt=product, variable=variable)
 
+            # Multiply all given factors for given variable
+            product = self.multiply(factors=factors)
+
+            # Maximize the product of factors for the given variable
+            new_cpt = self.super_max(cpt=product, variable=variable)
+
+            # Change used factors in the list of all CPTs with maximized product of used factors
             cpt_list = [cpt for cpt in cpt_list if list(cpt.columns) not in headers]
-
             cpt_list.append(new_cpt)
 
-        trivial = pd.DataFrame({'p': [1.0], 'MPE': [self._value_dict]})
-        trivial['p'] = [cpt_list[i].iloc[0]['p']*cpt_list[i+1].iloc[0]['p'] for i in range(len(cpt_list)-1)]
-        print(f'\nThis is the MPE given the evidence {self._evidence}: \n {trivial}')
+        # Initialize Dataframe
+        trivial = pd.DataFrame({'p': [1.0]})
+
+        # Multiply final expressions
+        for f in cpt_list:
+            trivial.at[0, 'p'] = trivial.iloc[0]['p'] * f['p'].max()
+
+        #print(f'\nThis is the MPE given the evidence {self._evidence}: \n {trivial}')
         return trivial
 
     def _edge_pruning(self):
@@ -56,38 +79,41 @@ class MPE:
             self._bn.update_cpt(variable=var, cpt=NEW_CPT)
 
     @staticmethod
-    def _all_cpt_containing_var(cpt_list: list[pd.DataFrame], variable: str) -> list[pd.DataFrame]:
+    def all_cpt_containing_var(cpt_list: list[pd.DataFrame], variable: str) -> list[pd.DataFrame]:
         return [cpt for cpt in cpt_list if variable in cpt.columns]
 
     @staticmethod
-    def _multiply(factors: list[pd.DataFrame]) -> pd.DataFrame:
-        common_vars = reduce(np.intersect1d, ([factor.columns for factor in factors]))
-        common_vars = list(np.delete(common_vars, np.where(common_vars == 'p')))
+    def multiply(factors: list[pd.DataFrame]) -> pd.DataFrame:
 
-        merged_df = factors[0]
+        # Initialize merging Dataframe
+        merged_df = factors.pop(0)
 
-        for factor in factors[1:]:
-            merged_df = pd.merge(merged_df, factor, on=common_vars)
+        # Start merging for loop
+        for factor in factors:
+            common_vars = np.intersect1d(merged_df.columns[:-1], factor.columns[:-1])
+            merged_df = pd.merge(merged_df, factor, on=list(common_vars))
             merged_df['p'] = (merged_df['p_x'] * merged_df['p_y'])
             merged_df.drop(['p_x', 'p_y'], inplace=True, axis=1)
 
-
         merged_df['p'] = merged_df['p'].astype(float)
-
-
         return merged_df
 
-    def _super_max(self, cpt: pd.DataFrame, variable: str):
+    @staticmethod
+    def super_max(cpt: pd.DataFrame, variable: str):
 
-        values = cpt[variable].unique()
-        indices = [cpt.loc[cpt[variable] == value]['p'].idxmax() for value in values]
-        maximums = [cpt.loc[index] for index in indices]
-        cpt = pd.concat(maximums, axis=1).transpose().reset_index().drop('index', axis=1).dropna()
+        cols = [col for col in cpt.columns[:-1] if col != variable]
 
-        for idx, row in cpt.iterrows():
-            self._value_dict[variable] = cpt.to_dict('records')[idx][variable]
+        if len(cols) != 0:
+            cpt = cpt.sort_values(by=['p'])
 
-        cpt = cpt.drop(columns=variable, axis=1)
+            cols = [col for col in cpt.columns[:-1] if col != variable]
+
+
+            unique_vals2 = cpt.drop_duplicates(subset=cols, keep="last")
+
+            unique_vals2 = unique_vals2.drop(columns=variable)
+            unique_vals2 = unique_vals2.reset_index(drop=True)
+
+            return unique_vals2
 
         return cpt
-

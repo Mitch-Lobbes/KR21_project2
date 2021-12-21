@@ -2,30 +2,36 @@ import random
 from BayesNet import BayesNet
 from MPE import MPE
 from Ordering import Ordering
+from copy import deepcopy
+
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/testing/lecture_example.BIFXML"
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/testing/lecture_example2.BIFXML"
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/testing/dog_problem.BIFXML"
+#NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/Networks/Small/asia.bif.BIFXML"
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/Networks/Small/cancer.bif.BIFXML"
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/Networks/Large/win95pts.bif.BIFXML"
+
+# NETWORK = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/Networks/VeryLarge/andes.bif.BIFXML"
 
 
-NETWORK = "testing/lecture_example2.BIFXML"
-
-
-test1, test2, test3 = BayesNet(), BayesNet(), BayesNet()
-
-test1.load_from_bifxml(file_path=NETWORK)
-test2.load_from_bifxml(file_path=NETWORK)
-test3.load_from_bifxml(file_path=NETWORK)
-
+test = BayesNet()
+test.load_from_bifxml(file_path=NETWORK)
 ordering = Ordering()
-
-query1 = test1.get_all_variables()
-query2 = test2.get_all_variables()
-query3 = test3.get_all_variables()
-random.shuffle(query3)
-
-orderings = [(test1, ordering.min_degree(bn=test1, X=query1)),
-             (test2, ordering.min_fill(bn=test2, X=query2)),
-             (test3, query3)]
 mpe = MPE()
 
-for tup in orderings:
-    mpe.run(tup[0], evidence={'J': True, 'O': False}, order=tup[1])
+vars = test.get_all_variables()
+evidence_var = {random.choice(vars): True, random.choice(vars): True}
+test2 = deepcopy(test)
+
+#mpe.run(bn=test, evidence={'J': True, 'O': False})
+#print(f"Evidence: {evidence_var}")
+mpe.run(bn=test, evidence=evidence_var, order=0)
+mpe.run(bn=test, evidence=evidence_var, order=1)
+
+
+
+
+
+
 
 

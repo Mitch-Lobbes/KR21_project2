@@ -1,59 +1,116 @@
-import glob, os
 import random
-import time
-
-from pgmpy.readwrite import BIFReader, XMLBIFWriter
-
+import os
+from time import time
 from BayesNet import BayesNet
 from Ordering import Ordering
 from MPE import MPE
+import BN_Generator as BNG
 
-PATH = "/Users/robinbux/Desktop/Vrije Universiteit/Period_2/KnowledgeRepresentation/Assignment/Assignment2/code/KR21_project2/Networks/**"
 
+class Evaluation:
 
-def load_bns() -> list[BayesNet]:
-    bns = []
-    for file_path in glob.iglob(PATH, recursive=True):
-        if file_path.endswith("BIFXML"):  # filter dirs
+    def __init__(self):
+        self._pad = "/Users/mitchlobbes/Documents/Msc Artificial Intelligence/Period 1.2/KR/KR21_project2/UseCase"
+        self._ordering = Ordering()
+        self._mpe = MPE()
+        self._mpe_dict: dict
+
+    def start_evaluation(self):
+
+        for filename in os.listdir(self._pad):
+
+            # Initialize BayesNet
             bn = BayesNet()
+            file_path = os.path.join(self._pad, filename)
             bn.load_from_bifxml(file_path=file_path)
-            bns.append(bn)
-    return bns
 
-def run_experiment():
-    bns = load_bns()
-    ordering = Ordering()
-    mpe = MPE()
-    mpe_dict = dict()
-    for bn in bns:
-        vars = bn.get_all_variables()
-        order_min_degree = [ordering.min_degree(bn=bn,X=vars)]
-        order_min_fill = [ordering.min_fill(bn=bn,X=vars)]
-        random_orderings = ordering.random_orderings(X=vars, amount=20)
-        orderings = [order_min_degree, order_min_fill, random_orderings]
-        evidence_var = {random.choice(vars): True}
-        for idx, ordering in enumerate(orderings):
-            heuristic = "order_min_degree" if idx == 0 else "order_min_fill" if idx == 1 else "random"
-            total_time = 0
-            for order in ordering:
-                time_before = time.time()
-                mpe.run(
-                    bn=bn,
-                    evidence=evidence_var,
-                    order=order
-                )
-                runtime = time.time() - time_before
-                total_time += runtime
-            time_avg = total_time / len(ordering)
-            if not mpe_dict[heuristic]:
-                mpe_dict[heuristic] = {
-                    len(vars): time_avg
-                }
-            else:
-                mpe_dict[heuristic][len(vars)] = time_avg
-    return mpe_dict
+            # Get all variables
+            variables = bn.get_all_variables()
+
+            # Get all orderings
+            order_min_degree = self._ordering.min_degree(bn=bn, X=variables)
+            order_min_fill = self._ordering.min_fill(bn=bn, X=variables)
+            order_random = self._ordering.random_orderings(X=variables,
+                                                           heuristic_orders=[order_min_degree, order_min_fill],
+                                                           amount=5040)
+
+            # Store all orders
+            all_orders = [("Degree", [order_min_degree]*5040), ("Fill", [order_min_fill]*5040), ("Random", order_random)]
+
+            # Generate random evidence
+            #evidence = {random.choice(variables): True}
+            evidence = {"Obesity": True,
+                        "Parental Obesity": True}
+
+            for name, ordering in all_orders:
+
+                total_time = 0
+                counter = 0
+                for order in ordering:
+                    print(counter)
+                    counter +=1
+                    start = time()
+                    self._mpe.run(bn=bn, evidence=evidence, order=order)
+                    runtime = time() - start
+                    total_time += runtime
+
+                average_run_time = total_time / len(ordering)
+
+                print(f"File: {filename}")
+                print(f"Heuristic: {name}")
+                print(f"# Variables: {len(variables)}")
+                print(f"Runtime: {average_run_time}")
+                print("------------------------------------------------------------")
+
+    def start_evaluation2(self):
+
+        max_nodes = 100
+
+        for i in range(5, max_nodes, 5):
+
+            cpt_dict, all_nodes, all_edges = BNG.bn_creator(i)
+
+            all_nodes = list(map(str, all_nodes))
+            all_edges = [tuple(map(str, tup)) for tup in all_edges]
+            #print(cpt_dict['1'])
+
+
+            bn = BayesNet()
+            bn.create_bn(cpts=cpt_dict,edges=all_edges,variables=all_nodes)
+
+            # Get all variables
+            variables = bn.get_all_variables()
+
+            # Get all orderings
+            order_min_degree = self._ordering.min_degree(bn=bn, X=variables)
+            order_min_fill = self._ordering.min_fill(bn=bn, X=variables)
+            order_random = self._ordering.random_orderings(X=variables,
+                                                           heuristic_orders=[order_min_degree, order_min_fill],
+                                                           amount=50)
+
+            # Store all orders
+            all_orders = [("Degree", [order_min_degree]*50), ("Fill", [order_min_fill]*50), ("Random", order_random)]
+
+            # Generate random evidence
+            evidence = {random.choice(variables): True}
+
+            for name, ordering in all_orders:
+
+                total_time = 0
+                for order in ordering:
+                    start = time()
+                    self._mpe.run(bn=bn, evidence=evidence, order=order)
+                    runtime = time() - start
+                    total_time += runtime
+
+                average_run_time = total_time / len(ordering)
+                print(f"File: Example Generator {i} Nodes")
+                print(f"Heuristic: {name}")
+                print(f"# Variables: {len(variables)}")
+                print(f"Runtime: {average_run_time}")
+                print("------------------------------------------------------------")
 
 
 if __name__ == "__main__":
-    run_experiment()
-
+    evaluation = Evaluation()
+    evaluation.start_evaluation()

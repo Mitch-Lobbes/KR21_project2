@@ -3,6 +3,7 @@ import copy
 from networkx import DiGraph, Graph
 
 from BayesNet import BayesNet
+from itertools import permutations
 
 
 class Ordering:
@@ -38,15 +39,19 @@ class Ordering:
 
         return order
 
-    def random_orderings(self, X: list[str], amount: int) -> list[list[str]]:
-        X = copy.deepcopy(X)
-        list_of_orderings = []
-        for _ in range(amount):
-            order = random.shuffle(X)
-            list_of_orderings.append(order)
-        return list_of_orderings
+    @staticmethod
+    def random_orderings(X: list[str], heuristic_orders: list[list[str]], amount: int) -> list[list[str]]:
 
-            
+        while len(heuristic_orders) < amount + 2:
+
+            r = random.sample(X, len(X))
+
+            if r not in heuristic_orders:
+                heuristic_orders.append(r)
+
+
+        return heuristic_orders[2:]
+
     def _get_node_with_smallest_nbr_neighbors(self, interaction_graph: Graph, X: list[str]) -> str:
         node = X[0]
         least_amount_neighbors = len(list(interaction_graph.neighbors(X[0])))
