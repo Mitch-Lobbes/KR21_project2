@@ -14,12 +14,7 @@ class MAP:
         self._bn = bn
         self.marginal = Marginal(bn=bn)
         self.pruner = FrenchPruning()
-
-    def map_old(self, Q: Set[str], E: dict[str, bool]) -> dict[str, bool]:
-        # return (post_marg := self.marginal.posterior_marginal(Q=Q, E=E)).loc[post_marg['p'].idmax()]
-        post_marginal = self.marginal.posterior_marginal(Q=Q, E=E)
-        most_likely_instantiation = post_marginal.loc[post_marginal['p'].idxmax()]
-        return most_likely_instantiation.to_dict()
+        self._evidence = {}
 
     def MAP(self, M: Set[str], E: dict[str, bool], order: list[str] = None) -> Tuple[float, dict[str, bool]]:
         assignments = dict()

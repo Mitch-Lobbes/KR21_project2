@@ -97,7 +97,6 @@ class BayesNet:
         except KeyError:
             raise Exception('Variable not in the BN')
 
-
     def get_all_variables(self) -> List[str]:
         """
         Returns a list of all variables in the structure.
@@ -250,7 +249,6 @@ class BayesNet:
     def get_edges_outgoing_from_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[0] == variable]
 
-
     def get_edges_for_var(self, variable: str) -> list[Tuple[str, str]]:
         return [edge for edge in self.structure.edges if edge[0] == variable or edge[1] == variable]
 
@@ -279,4 +277,3 @@ class BayesNet:
             bool: True if it is a leaf node, False otherwise
         """
         return len(self.get_children(variable=node)) == 0
-

@@ -93,6 +93,3 @@ class DSeparated:
             self.bayesNet.del_edges(edges=edges)
             self.bayesNet.del_var(variable=node)
 
-
-    def prune(self) -> None:
-        pass

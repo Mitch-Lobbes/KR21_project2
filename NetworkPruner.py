@@ -12,7 +12,7 @@ class FrenchPruning:
         self._query: Set[str]
         self._evidence: dict[str, bool]
 
-    def run(self, bn: BayesNet, query: Set[str], evidence: dict[str, bool]):
+    def run(self, bn: BayesNet, query: Set[str], evidence: dict[str, bool]) -> BayesNet:
 
         self._bn = bn
         self._query = query
@@ -20,6 +20,8 @@ class FrenchPruning:
 
         self._node_pruning()
         self._edge_pruning()
+
+        return self._bn
 
     def _node_pruning(self):
 
