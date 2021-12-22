@@ -15,7 +15,7 @@ class DSeparated:
         self.Y: Set[str]
 
     def d_separated(self, bayesNet: BayesNet, X: Set[str], Z: Set[str], Y: Set[str]) -> bool:
-        self.bayesNet = bayesNet
+        self.bayesNet = copy.deepcopy(bayesNet)
         self.X = X
         self.Z = Z
         self.Y = Y
@@ -24,13 +24,10 @@ class DSeparated:
         self._ancestral_graph()
 
         # Step 2: Moralization
-        self.bayesNet.draw_structure()
         self._moralization()
-        self.bayesNet.draw_structure()
 
         # Step 3: Givens Removal
         self._given_removal()
-        self.bayesNet.draw_structure()
 
         # Step 4: Check if path exists
         for node in self.X:

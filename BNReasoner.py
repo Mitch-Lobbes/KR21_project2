@@ -72,24 +72,6 @@ class BNReasoner:
             bool: True if it is a leaf node, False otherwise
         """
         return len(self.bn.get_children(variable=node)) == 0
-            
-    # Task 1: Developing a Bayesian Network Reasoner -------------------------------------------------------------------
-    def d_separation(self, X: Set[str], Y: Set[str], Z: Set[str]) -> bool:
-        """Determins whether X is independent of Y, given Z
 
-        Args:
-            X (str): [description]
-            Y (str): [description]
-            Z (str): [description]
-
-        Returns:
-            bool: [description]
-        """
-        pass
-    
-    def _pruning(self, X: str, Y: str, Z:str) -> None:
-        """Delete every leaf node W ∉ X∪Y∪Z
-        """
-        pass
 
     # TODO: This is where your methods should go

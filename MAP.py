@@ -5,7 +5,7 @@ import pandas as pd
 from BNUtils import BNUtils
 from BayesNet import BayesNet
 from Marginal import Marginal
-from NetworkPruner import FrenchPruning
+from NetworkPruner import NetworkPruner
 
 
 class MAP:
@@ -13,10 +13,9 @@ class MAP:
     def __init__(self, bn: BayesNet):
         self._bn = bn
         self.marginal = Marginal(bn=bn)
-        self.pruner = FrenchPruning()
+        self.pruner = NetworkPruner()
 
     def map_old(self, Q: Set[str], E: dict[str, bool]) -> dict[str, bool]:
-        # return (post_marg := self.marginal.posterior_marginal(Q=Q, E=E)).loc[post_marg['p'].idmax()]
         post_marginal = self.marginal.posterior_marginal(Q=Q, E=E)
         most_likely_instantiation = post_marginal.loc[post_marginal['p'].idxmax()]
         return most_likely_instantiation.to_dict()

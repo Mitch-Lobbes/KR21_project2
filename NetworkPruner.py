@@ -5,7 +5,7 @@ from BayesNet import BayesNet
 import itertools
 
 
-class FrenchPruning:
+class NetworkPruner:
 
     def __init__(self):
         self._bn: BayesNet
