@@ -7,7 +7,7 @@ from MAP import MAP
 from MPE import MPE
 from Ordering import Ordering
 from typing import Set, Tuple
-from NetworkPruner import FrenchPruning
+from NetworkPruner import NetworkPruner
 from Marginal import Marginal
 import pandas as pd
 
@@ -29,7 +29,7 @@ class BNReasoner:
         self._map = MAP(bn=self.bn)
         self.mpe = MPE()
         self._order = Ordering()
-        self._pruning = FrenchPruning()
+        self._pruning = NetworkPruner()
         self._marginal = Marginal(bn=self.bn)
             
     # UTILITY FUNCTIONS ------------------------------------------------------------------------------------------------

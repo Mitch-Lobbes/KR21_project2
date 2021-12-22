@@ -33,7 +33,7 @@ class Tests(unittest.TestCase):
         self.d_seperated = DSeparated()
         self.ordering = Ordering()
         self.pruner = NetworkPruner()
-        self.mep = MPE()
+        self.mpe = MPE()
 
     # -----------------------------------------------------------------------------------------------
     # D-Separation Tests ----------------------------------------------------------------------------
@@ -109,12 +109,10 @@ class Tests(unittest.TestCase):
         self.assertTrue('I' in result[1])
 
     # -----------------------------------------------------------------------------------------------
-    # MEP Test --------------------------------------------------------------------------------------
-    def test_mep(self):
+    # MPE Test --------------------------------------------------------------------------------------
+    def test_mpe(self):
         E = {"X": True}
         order = ['I', 'J', 'Y', 'O', 'X']
-        result = self.mep.run(bn=self.reasoner_two.bn, evidence=E, order=order)
-        self.assertTrue(result[0] == 0.24272)
-        self.assertFalse(result[1]['J'])
-        # 'I' can be both True and False with equal prob, so just check if it exists
-        self.assertTrue('I' in result[1])
+        result = self.mpe.run(bn=self.reasoner_two.bn, evidence=E, order=order)
+        self.assertTrue(result['X'])
+        self.assertTrue(result['p'] == 0.2304225)
